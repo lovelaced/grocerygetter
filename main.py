@@ -3,6 +3,7 @@ import ssl
 import time
 import sys
 import logging
+import random
 from commands import get_command
 
 
@@ -15,7 +16,7 @@ if len(sys.argv) < 1:
     print "Usage: main.py <channel> [nick]"
     exit(1)
 channel = sys.argv[1]
-botnick = "featurecr33p" if len(sys.argv) < 3 else sys.argv[2]
+botnick = "BOT" + random.randint(1, 9999) if len(sys.argv) < 3 else sys.argv[2]
 commandprefix = "."
 
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+import time
+from main import sendmsg
 from os.path import expanduser
 
 homedir = expanduser("~")
@@ -53,7 +55,15 @@ def get_command(name):
 
 @command("help")
 def get_help(args):
-    return
+    commands = [
+        ".add: add an item to your list",
+        ".del: delete an item from your list",
+        ".newlist: erase your list to start anew"
+    ]
+    for command in commands:
+        sendmsg(getuser(args), command)
+        time.sleep(1)
+    return "sent ;)"
 
 @command("add")
 def add(args):
