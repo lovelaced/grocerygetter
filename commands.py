@@ -51,6 +51,9 @@ def get_command(name):
     else:
         return nothing
 
+@command("help")
+def get_help(args):
+    return
 
 @command("add")
 def add(args):

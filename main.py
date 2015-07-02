@@ -1,4 +1,6 @@
 import socket
+import ssl
+import time
 import sys
 import logging
 from commands import get_command
@@ -7,11 +9,11 @@ from commands import get_command
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(levelname)s %(message)s')
 # Basic config
 server = "irc.rizon.net"
-port = 6667
+port = 6697
 
 if len(sys.argv) < 1:
-  print "Usage: main.py <channel> [nick]"
-  exit(1)
+    print "Usage: main.py <channel> [nick]"
+    exit(1)
 channel = sys.argv[1]
 botnick = "featurecr33p" if len(sys.argv) < 3 else sys.argv[2]
 commandprefix = "."
@@ -106,10 +108,14 @@ def process_data(data):
     return lines
 
 
-ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ircsock.connect((server, port))
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((server, port))
+ircsock = ssl.wrap_socket(s)
+time.sleep(2)
 ircsock.send("USER %s %s %s :some stuff\n" % (botnick, botnick, botnick))
+time.sleep(2)
 ircsock.send("NICK %s\n" % botnick)
+time.sleep(3)
 joinchan(channel)
 
 while True:
