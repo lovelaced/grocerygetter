@@ -1,8 +1,10 @@
 import socket
 import sys
+import logging
 from commands import get_command
 
 
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(levelname)s %(message)s')
 # Basic config
 server = "irc.rizon.net"
 port = 6667
@@ -11,7 +13,7 @@ if len(sys.argv) < 1:
   print "Usage: main.py <channel> [nick]"
   exit(1)
 channel = sys.argv[1]
-if len(sys.argv) < 3 botnick = "featurecr33p" else sys.argv[2]
+botnick = "featurecr33p" if len(sys.argv) < 3 else sys.argv[2]
 commandprefix = "."
 
 
@@ -121,6 +123,7 @@ while True:
             try:
                 sendmsg(channel, cmd(args))
             except Exception as e:
+                logging.warning(str(e))
                 sendmsg(channel, (str(e), "something bad happened"))
         else:
             continue
