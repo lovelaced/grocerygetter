@@ -111,11 +111,9 @@ def process_data(data):
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((server, port))
 ircsock = ssl.wrap_socket(s)
-time.sleep(2)
 ircsock.send("USER %s %s %s :some stuff\n" % (botnick, botnick, botnick))
-time.sleep(2)
 ircsock.send("NICK %s\n" % botnick)
-time.sleep(3)
+time.sleep(2)
 joinchan(channel)
 
 while True:
