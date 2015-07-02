@@ -61,7 +61,7 @@ def get_help(args):
         ".newlist: erase your list to start anew"
     ]
     for command in commands:
-        sendmsg(getuser(args), command)
+        sendmsg(getuser(args["raw"]), command)
         time.sleep(1)
     return "sent ;)"
 
