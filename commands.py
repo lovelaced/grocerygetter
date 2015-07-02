@@ -137,7 +137,7 @@ def new_list(args):
     try:
         logging.debug("Deleting file: " + homedir + repodir + user + ".txt")
         os.remove(homedir + repodir + user + ".txt")
-    except IOError as error:
+    except OSError as error:
         logging.warning(str(error))
         return user + "'s list has already been cleared."
     return user + "'s previous list has been cleared."
