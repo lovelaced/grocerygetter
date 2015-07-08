@@ -157,27 +157,26 @@ def random_option(args):
     #     elif (word == "|" or index == len(arguments)-1) and current_choice != "":
     #         choice_list.append(current_choice)
     #         current_choice = ""
-
+    sep_list = []
     for index in range(len(arguments)-1):
         word = arguments[index]
         print index, word
-        sep_list = []
         if word == "|":
             sep_list.append(index)
         print sep_list
-        for i in range(len(sep_list)-1):
-            if i is not 0:
-                current_choice = " ".join(arguments[i-1:i+1])
-                print "i not 0", current_choice
-            elif i is not len(sep_list)-1:
-                current_choice = " ".join(arguments[:i])
-                print "i not len", current_choice
-            else:
-                current_choice = " ".join(arguments[i:])
-                print "else", current_choice
+    for i in range(len(sep_list)-1):
+        if i is not 0:
+            current_choice = " ".join(arguments[i-1:i+1])
+            print "i not 0", current_choice
+        elif i is not len(sep_list)-1:
+            current_choice = " ".join(arguments[:i])
+            print "i not len", current_choice
+        else:
+            current_choice = " ".join(arguments[i:])
+            print "else", current_choice
 
-            if current_choice is not None:
-                choice_list.append(current_choice)
+        if current_choice is not None:
+            choice_list.append(current_choice)
         print choice_list
         if choice_list:
             return random.choice(choice_list)
