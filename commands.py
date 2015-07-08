@@ -163,13 +163,23 @@ def random_option(args):
         sep_list = []
         if word == "|":
             sep_list.append(index)
-
+        print sep_list
         for i in range(len(sep_list)-1):
-            if sep_list[i-1]:
+            if i is not 0:
                 current_choice = " ".join(arguments[i-1:i+1])
-                choice_list.append(current_choice)
-            else:
+                print "i not 0", current_choice
+            elif i is not len(sep_list)-1:
                 current_choice = " ".join(arguments[:i])
+                print "i not len", current_choice
+            else:
+                current_choice = " ".join(arguments[i:])
+                print "else", current_choice
+
+            if current_choice is not None:
                 choice_list.append(current_choice)
-    return random.choice(choice_list)
+        print choice_list
+        if choice_list:
+            return random.choice(choice_list)
+        else:
+            return ""
 
