@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
-import random
 import time
 from os.path import expanduser
 
@@ -138,16 +137,7 @@ def new_list(args):
     try:
         logging.debug("Deleting file: " + homedir + repodir + user + ".txt")
         os.remove(homedir + repodir + user + ".txt")
-    except IOError as error:
+    except OSError as error:
         logging.warning(str(error))
         return user + "'s list has already been cleared."
     return user + "'s previous list has been cleared."
-
-@command("r")
-def random_option(args):
-    choices = args["args"]
-    choice_list = []
-    for choice in choice_list:
-        if choice != "|":
-            choice_list.append(choice)
-    return random.choice(choice_list)
