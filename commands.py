@@ -145,45 +145,8 @@ def new_list(args):
 
 @command("r")
 def random_option(args):
-    arguments = args["args"]
-    arguments = " ".join(arguments)
-    print arguments
-    choice_list = arguments.split("|")
-    print choice_list
+    choices = " ".join(args["args"]).split("|")
+    choice_list = []
+    for choice in choices:
+        choice_list.append(choice.strip())
     return random.choice(choice_list)
-    # current_choice = ""
-    # for index in range(len(arguments)-1):
-    #     word = arguments[index]
-    #     if word != "|" and current_choice != "":
-    #         current_choice = current_choice + " " + word
-    #     elif current_choice == "":
-    #         current_choice = word
-    #     elif (word == "|" or index == len(arguments)-1) and current_choice != "":
-    #         choice_list.append(current_choice)
-    #         current_choice = ""
-    sep_list = []
-    # for index in range(len(arguments)-1):
-    #     word = arguments[index]
-    #     print index, word
-    #     if word == "|":
-    #         sep_list.append(index)
-    #     print sep_list
-    # for i in range(len(sep_list)-1):
-    #     if i is not 0:
-    #         current_choice = " ".join(arguments[i-1:i+1])
-    #         print "i not 0", current_choice
-    #     elif i is not len(sep_list)-1:
-    #         current_choice = " ".join(arguments[:i])
-    #         print "i not len", current_choice
-    #     else:
-    #         current_choice = " ".join(arguments[i:])
-    #         print "else", current_choice
-    #
-    #     if current_choice is not None:
-    #         choice_list.append(current_choice)
-    #     print choice_list
-    #     if choice_list:
-    #         return random.choice(choice_list)
-    #     else:
-    #         return ""
-
