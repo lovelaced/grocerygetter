@@ -145,10 +145,16 @@ def new_list(args):
 
 @command("r")
 def random_option(args):
-    choices = args["args"]
+    arguments = args["args"]
     choice_list = []
-    for choice in choices:
-        if choice != "|":
-            choice_list.append(choice)
+    current_choice = ""
+    for word in arguments:
+        if word != "|" and current_choice != "":
+            current_choice = current_choice + " " + word
+        elif current_choice == "":
+            current_choice = word
+        elif word == "|":
+            choice_list.append(current_choice)
+            current_choice = ""
     return random.choice(choice_list)
 
