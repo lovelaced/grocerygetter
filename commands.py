@@ -160,6 +160,7 @@ def random_option(args):
 
     for index in range(len(arguments)-1):
         word = arguments[index]
+        print index, word
         sep_list = []
         if word == "|":
             sep_list.append(index)
