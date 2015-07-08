@@ -147,7 +147,7 @@ def new_list(args):
 def random_option(args):
     choices = args["args"]
     choice_list = []
-    for choice in choice_list:
+    for choice in choices:
         if choice != "|":
             choice_list.append(choice)
     return random.choice(choice_list)
