@@ -147,19 +147,29 @@ def new_list(args):
 def random_option(args):
     arguments = args["args"]
     choice_list = []
-    current_choice = ""
+    # current_choice = ""
+    # for index in range(len(arguments)-1):
+    #     word = arguments[index]
+    #     if word != "|" and current_choice != "":
+    #         current_choice = current_choice + " " + word
+    #     elif current_choice == "":
+    #         current_choice = word
+    #     elif (word == "|" or index == len(arguments)-1) and current_choice != "":
+    #         choice_list.append(current_choice)
+    #         current_choice = ""
+
     for index in range(len(arguments)-1):
         word = arguments[index]
-        if word != "|" and current_choice != "":
-            current_choice = current_choice + " " + word
-            print current_choice
-        elif current_choice == "":
-            current_choice = word
-            print current_choice
-        elif word == "|" or index == len(arguments)-1:
-            choice_list.append(current_choice)
-            print str(choice_list)
-            current_choice = ""
-    print choice_list
+        sep_list = []
+        if word == "|":
+            sep_list.append(index)
+
+        for i in range(len(sep_list)-1):
+            if sep_list[i-1]:
+                current_choice = " ".join(arguments[i-1:i+1])
+                choice_list.append(current_choice)
+            else:
+                current_choice = " ".join(arguments[:i])
+                choice_list.append(current_choice)
     return random.choice(choice_list)
 
