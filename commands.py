@@ -149,7 +149,7 @@ def random_option(args):
     choice_list = []
     current_choice = ""
     for index in range(len(arguments)-1):
-        word = args[index]
+        word = arguments[index]
         if word != "|" and current_choice != "":
             current_choice = current_choice + " " + word
             print current_choice
