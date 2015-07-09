@@ -150,3 +150,33 @@ def random_option(args):
     for choice in choices:
         choice_list.append(choice.strip())
     return random.choice(choice_list)
+
+@command("8ball")
+@command("8")
+def eightball(args):
+    responses = [
+        "It is decidedly so",
+        "Without a doubt",
+        "Yes definitely",
+        "You may rely on it",
+        "As I see it, yes",
+        "Most likely",
+        "Outlook good",
+        "Yes",
+        "Signs point to yes",
+        "Reply hazy try again",
+        "Ask again later",
+        "Better not tell you now",
+        "Cannot predict now",
+        "Concentrate and ask again",
+        "Don't count on it",
+        "My reply is no",
+        "My sources say no",
+        "Outlook not so good",
+        "Very doubtful"
+    ]
+    number = random.randint(0, 100)
+    if number == 0:
+        return "Commit suicide"
+    else:
+        return random.choice(responses)
