@@ -151,8 +151,7 @@ def random_option(args):
         choice_list.append(choice.strip())
     return random.choice(choice_list)
 
-@command("8ball")
-@command("8")
+@command("8", "8ball")
 def eightball(args):
     responses = [
         "It is decidedly so",
