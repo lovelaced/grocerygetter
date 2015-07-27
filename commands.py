@@ -151,6 +151,39 @@ def random_option(args):
         choice_list.append(choice.strip())
     return random.choice(choice_list)
 
+@command("hype")
+def hype(args):
+    import time
+    hypeText = []
+    toResolve = args["args"]
+    argString = " ".join(toResolve)
+    if len(toResolve) < 1:
+        hypeText = ["F R O S T",
+                    "R",
+                    "O",
+                    "S",
+                    "T"]
+    elif len(argString) > 8:
+        return ""
+    else:
+        char = 0
+        while char < len(argString):
+            c = argString[char].upper()
+            if char == 0:
+                x = 1
+                while x < len(argString):
+                    c += (" " + argString[x].upper())
+                    x += 1
+            hypeText.append(c)
+            char += 1
+    
+    sendmsg = args["sendmsg"]
+    channel = args["channel"]
+    for lines in hypeText:
+        sendmsg(channel, lines)
+        time.sleep(.3)
+    return ""
+
 @command("8")
 def eightball(args):
     responses = [
