@@ -219,7 +219,11 @@ def eightball(args):
 @command("ud")
 def ud(args):
     if args["args"]:
-        payload = {"term" : str(args["args"][0])}
+        try:
+            int(args["args"][-1])
+            payload = {"term" : " ".join(args["args"][:-1])}
+        except ValueError:
+            payload = {"term" : " ".join(args["args"])}
         r = requests.get("https://www.urbandictionary.com/define.php", params=payload)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
@@ -230,7 +234,7 @@ def ud(args):
             if len(l) > 0:
                 if len(args["args"]) > 1:
                     try:
-                        i = int(args["args"][1].strip()) 
+                        i = int(args["args"][-1].strip()) 
                         if i < 1:
                             raise ValueError
                         data = title + ": "+ str(l[i-1]) + irc_colors.BOLD + " [" + str(i) + "/" + str(len(l)) + "]"
@@ -244,3 +248,63 @@ def ud(args):
                 return "No definition found in UD."
         else:
             return "Connection error: " + str(r.status_code)
+
+@command("ba")
+def ba(args):
+    baseurl = "https://www.beeradvocate.com"
+    if args["args"]:
+        try:
+            int(args["args"][-1])
+            payload = {"q" : " ".join(args["args"][:-1])}
+        except ValueError:
+            payload = {"q" : " ".join(args["args"])}
+        r = requests.get(baseurl + "/search/", params=payload)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            regex = re.compile("/beer/profile/.*/.+") #so we match only the beers and not the brewery.
+            beers = [b.get("href") for b in soup.find_all('a') if re.match(regex, str(b.get("href")))>=0]
+            if len(beers) > 0:
+                if len(args["args"]) > 1:
+                    try:
+                        i = int(args["args"][-1].strip())
+                        if i < 1:
+                            raise ValueError
+                        data = beer_lookup(baseurl+beers[i-1])
+                        return data['name'] + " | " + data['style'], "ba score: " + data['ba_score'] + "(From: " + data['ba_ratings'] + ") | bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[i-1]
+                        pass
+                    except (TypeError, IndexError, ValueError) as e:
+                        pass
+                data = beer_lookup(baseurl+beers[0])
+                return data['name'] + " | " + data['style'], "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] +") | Bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[0]
+
+            else:
+               return "No results from BA." 
+            br = requests.get(baseurl + beers[0])
+
+# BA helper function.
+def beer_lookup(url):
+    r = requests.get(url) 
+    if r.status_code == 200:
+        soup = BeautifulSoup(r.text, "html.parser")
+        table = soup.find('table', attrs = {"width" : "100%"})
+        data = []
+        rows = table.find_all("tr")
+        for r in rows:
+            cols = r.find_all("td")
+            cols = [e.text.strip() for e in cols]
+            data.append([e for e in cols if e])
+
+        info = {}
+        rel_data = data[0][1].split('\n')
+        info['name'] = soup.title.string.split("|")[0]
+        info['ba_score'] = rel_data[1]
+        info['ba_class'] = rel_data[2]
+        info['ba_ratings'] = rel_data[3]
+        info['bro_score'] = rel_data[7]
+        info['brewery'] = rel_data[26]
+        (info['style'], info['abv']) = rel_data[29].split("|")
+        for e in info.keys(): #for the nasty utf-8 chars.
+            info[e] = ''.join([i if ord(i) < 128 else " " for i in info[e]])
+        return info
+
+
