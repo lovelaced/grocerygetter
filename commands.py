@@ -3,7 +3,10 @@ import os
 import logging
 import random
 import time
+import requests
+import re
 from os.path import expanduser
+from bs4 import BeautifulSoup
 
 homedir = expanduser("~")
 repodir = '/git/lists/'
@@ -212,3 +215,32 @@ def eightball(args):
         return "Commit suicide"
     else:
         return random.choice(responses)
+
+@command("ud")
+def ud(args):
+    if args["args"]:
+        payload = {"term" : str(args["args"][0])}
+        r = requests.get("https://www.urbandictionary.com/define.php", params=payload)
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
+            title = irc_colors.BOLD + soup.title.string[18:].upper() + irc_colors.NORMAL
+            l = [e.get_text().replace("\r", "").strip() for e in soup.find_all("div", class_= "meaning")]
+            for e in range(0,len(l)-1): #for the nasty utf-8 chars.
+                l[e] = ''.join([i if ord(i) < 128 else " " for i in l[e]])
+            if len(l) > 0:
+                if len(args["args"]) > 1:
+                    try:
+                        i = int(args["args"][1].strip()) 
+                        if i < 1:
+                            raise ValueError
+                        data = title + ": "+ str(l[i-1]) + irc_colors.BOLD + " [" + str(i) + "/" + str(len(l)) + "]"
+                        return data
+                    except (TypeError, IndexError, ValueError) as e:
+                        pass #print error for enterprise level debugging.
+
+                data = title + ": " + l[0] + irc_colors.BOLD + " [" + "1/" + str(len(l)) + "]"
+                return data
+            else:
+                return "No definition found in UD."
+        else:
+            return "Connection error: " + str(r.status_code)
