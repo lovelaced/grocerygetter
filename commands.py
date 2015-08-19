@@ -229,8 +229,6 @@ def ud(args):
             soup = BeautifulSoup(r.text, "html.parser")
             title = irc_colors.BOLD + soup.title.string[18:].upper() + irc_colors.NORMAL
             l = [e.get_text().replace("\r", "").strip() for e in soup.find_all("div", class_= "meaning")]
-            for e in range(0,len(l)-1): #for the nasty utf-8 chars.
-                l[e] = ''.join([i if ord(i) < 128 else " " for i in l[e]])
             if len(l) > 0:
                 if len(args["args"]) > 1:
                     try:
@@ -238,12 +236,12 @@ def ud(args):
                         if i < 1:
                             raise ValueError
                         data = title + ": "+ str(l[i-1]) + irc_colors.BOLD + " [" + str(i) + "/" + str(len(l)) + "]"
-                        return data
+                        return data.encode("utf-8")
                     except (TypeError, IndexError, ValueError) as e:
                         pass #print error for enterprise level debugging.
 
                 data = title + ": " + l[0] + irc_colors.BOLD + " [" + "1/" + str(len(l)) + "]"
-                return data
+                return data.encode("utf-8")
             else:
                 return "No definition found in UD."
         else:
@@ -304,7 +302,7 @@ def beer_lookup(url):
         info['brewery'] = rel_data[26]
         (info['style'], info['abv']) = rel_data[29].split("|")
         for e in info.keys(): #for the nasty utf-8 chars.
-            info[e] = ''.join([i if ord(i) < 128 else " " for i in info[e]])
+            info[e] = info[e].encode("utf-8")
         return info
 
 
