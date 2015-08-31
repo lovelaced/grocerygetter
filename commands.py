@@ -137,6 +137,12 @@ def delete(args):
 
 @command("newlist")
 def new_list(args):
+    # Usage: .newlist [listname]
+    if args["args"]:
+        try:
+           return args["args"]
+        except OSError as error:
+           return  
     user = getuser(args["raw"])
     try:
         logging.debug("Deleting file: " + homedir + repodir + user + ".txt")
@@ -262,22 +268,11 @@ def ba(args):
             regex = re.compile("/beer/profile/.*/.+") #so we match only the beers and not the brewery.
             beers = [b.get("href") for b in soup.find_all('a') if re.match(regex, str(b.get("href")))>=0]
             if len(beers) > 0:
-                if len(args["args"]) > 1:
-                    try:
-                        i = int(args["args"][-1].strip())
-                        if i < 1:
-                            raise ValueError
-                        data = beer_lookup(baseurl+beers[i-1])
-                        return data['name'] + " | " + data['style'], "ba score: " + data['ba_score'] + "(From: " + data['ba_ratings'] + ") | bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[i-1]
-                        pass
-                    except (TypeError, IndexError, ValueError) as e:
-                        pass
                 data = beer_lookup(baseurl+beers[0])
                 return data['name'] + " | " + data['style'], "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] +") | Bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[0]
 
             else:
                return "No results from BA." 
-            br = requests.get(baseurl + beers[0])
 
 # BA helper function.
 def beer_lookup(url):
@@ -299,9 +294,9 @@ def beer_lookup(url):
         info['ba_class'] = rel_data[2]
         info['ba_ratings'] = rel_data[3]
         info['bro_score'] = rel_data[7]
-        info['brewery'] = rel_data[26]
-        (info['style'], info['abv']) = rel_data[29].split("|")
-        for e in info.keys(): #for the nasty utf-8 chars.
+        info['brewery'] = rel_data[25]
+        (info['style'], info['abv']) = rel_data[28].split("|")
+        for e in info.keys():
             info[e] = info[e].encode("utf-8")
         return info
 
