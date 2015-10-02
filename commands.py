@@ -172,7 +172,7 @@ def hype(args):
                     "O",
                     "S",
                     "T"]
-    elif len(argString) > 8:
+    elif len(argString) > 20:
         return ""
     else:
         char = 0

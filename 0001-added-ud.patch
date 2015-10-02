@@ -1,0 +1,53 @@
+From 1ba4b750f88f5081793bdc3c1c9026e99c2e5d75 Mon Sep 17 00:00:00 2001
+From: azk <lol@no.way>
+Date: Sun, 16 Aug 2015 19:34:15 +0000
+Subject: [PATCH] added ud
+
+---
+ commands.py | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/commands.py b/commands.py
+index d415f68..878b841 100644
+--- a/commands.py
++++ b/commands.py
+@@ -4,6 +4,7 @@ import logging
+ import random
+ import time
+ from os.path import expanduser
++from bs4 import BeautifulSoup
+ 
+ homedir = expanduser("~")
+ repodir = '/git/lists/'
+@@ -212,3 +213,28 @@ def eightball(args):
+         return "Commit suicide"
+     else:
+         return random.choice(responses)
++
++@command("ud")
++def ud(args):
++    definitions = []
++    if args["args"]:
++        payload = {"term" : str(args["args"][0])}
++        r = requests.get("https://www.urbandictionary.com/define.php", params=payload)
++        if r.status_code == 200:
++            soup = BeautifulSoup(r.text, "html.parser")
++            title = soup.title.string[18:]
++            l = soup.find_all("div", class_= "meaning")
++            for e in l:
++                definitions.append(re.sub("\r<br/>", " ", re.sub("~", "", str(e).split('\n')[1])))
++            if len(args["args"]) == 2:
++                try:
++                    data = tcol.BOLD + title + ": " + tcol.NORMAL +  definitions[int(args["args"][1])-1] + tcol.BOLD + " [" + args["args"][1] + "/" + str(len(definitions)) + "]"
++                    return data
++                except TypeError:
++                    pass
++            data = tcol.BOLD + title + ": " + tcol.NORMAL + definitions[0] + tcol.BOLD + " [" + "1/" + str(len(definitions)) + "]"
++            return data
++        else:
++            return "No definition found in UD."
++
++
+-- 
+2.4.5
+

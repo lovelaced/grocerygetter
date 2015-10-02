@@ -1,0 +1,39 @@
+From f161f0d51235aa538f5f85d5862ada594bc748be Mon Sep 17 00:00:00 2001
+From: azk <lol@no.way>
+Date: Sun, 16 Aug 2015 20:05:27 +0000
+Subject: [PATCH] ud again..
+
+---
+ commands.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/commands.py b/commands.py
+index 878b841..1ab5f40 100644
+--- a/commands.py
++++ b/commands.py
+@@ -3,6 +3,8 @@ import os
+ import logging
+ import random
+ import time
++import requests
++import re
+ from os.path import expanduser
+ from bs4 import BeautifulSoup
+ 
+@@ -228,11 +230,11 @@ def ud(args):
+                 definitions.append(re.sub("\r<br/>", " ", re.sub("~", "", str(e).split('\n')[1])))
+             if len(args["args"]) == 2:
+                 try:
+-                    data = tcol.BOLD + title + ": " + tcol.NORMAL +  definitions[int(args["args"][1])-1] + tcol.BOLD + " [" + args["args"][1] + "/" + str(len(definitions)) + "]"
++                    data = irc_colors.BOLD + title + ": " + irc_colors.NORMAL +  definitions[int(args["args"][1])-1] + irc_colors.BOLD + " [" + args["args"][1] + "/" + str(len(definitions)) + "]"
+                     return data
+                 except TypeError:
+                     pass
+-            data = tcol.BOLD + title + ": " + tcol.NORMAL + definitions[0] + tcol.BOLD + " [" + "1/" + str(len(definitions)) + "]"
++            data = irc_colors.BOLD + title + ": " + irc_colors.NORMAL + definitions[0] + irc_colors.BOLD + " [" + "1/" + str(len(definitions)) + "]"
+             return data
+         else:
+             return "No definition found in UD."
+-- 
+2.4.5
+
