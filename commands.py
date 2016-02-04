@@ -255,28 +255,30 @@ def ud(args):
 
 @command("ba")
 def ba(args):
-    baseurl = "https://www.beeradvocate.com"
+    #define a user agent
+    user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.85 Safari/537.36'}
+    baseurl = "http://www.beeradvocate.com"
     if args["args"]:
         try:
             int(args["args"][-1])
             payload = {"q" : " ".join(args["args"][:-1])}
         except ValueError:
             payload = {"q" : " ".join(args["args"])}
-        r = requests.get(baseurl + "/search/", params=payload)
+        r = requests.get(baseurl + "/search/", headers=user_agent, params=payload)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
             regex = re.compile("/beer/profile/.*/.+") #so we match only the beers and not the brewery.
             beers = [b.get("href") for b in soup.find_all('a') if re.match(regex, str(b.get("href")))>=0]
             if len(beers) > 0:
-                data = beer_lookup(baseurl+beers[0])
+                data = beer_lookup(baseurl+beers[0], user_agent)
                 return data['name'] + " | " + data['style'], "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] +") | Bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[0]
 
             else:
                return "No results from BA." 
 
 # BA helper function.
-def beer_lookup(url):
-    r = requests.get(url) 
+def beer_lookup(url, user_agent):
+    r = requests.get(url, headers=user_agent) 
     if r.status_code == 200:
         soup = BeautifulSoup(r.text, "html.parser")
         table = soup.find('table', attrs = {"width" : "100%"})
@@ -295,7 +297,7 @@ def beer_lookup(url):
         info['ba_ratings'] = rel_data[3]
         info['bro_score'] = rel_data[7]
         info['brewery'] = rel_data[25]
-        (info['style'], info['abv']) = rel_data[28].split("|")
+        (info['style'], info['abv']) = rel_data[29].split("|")
         for e in info.keys():
             info[e] = info[e].encode("utf-8")
         return info
