@@ -5,7 +5,6 @@ import random
 import time
 import requests
 import re
-import urllib
 from os.path import expanduser
 from bs4 import BeautifulSoup
 
