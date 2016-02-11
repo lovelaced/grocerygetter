@@ -120,10 +120,14 @@ joinchan(channel)
 while True:
     data = ircsock.recv(1024)
     for ircmsg in process_data(data):
+	print ircmsg
         if "PING :" in ircmsg:
             ircsock.send("PONG :ping\n")
         elif channel in ircmsg:
-            args = parsemsg(ircmsg)
+	    try:
+                args = parsemsg(ircmsg)
+            except Exception as e:
+    	 	pass
             cmd = get_command(args["command"])
             try:
                 sendmsg(channel, cmd(args))

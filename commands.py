@@ -7,9 +7,11 @@ import requests
 import re
 from os.path import expanduser
 from bs4 import BeautifulSoup
+from nltk.tag import pos_tag
 
 homedir = expanduser("~")
 repodir = '/git/lists/'
+
 
 class irc_colors:
         NORMAL = u"\u000f"
@@ -159,6 +161,25 @@ def random_option(args):
     for choice in choices:
         choice_list.append(choice.strip())
     return random.choice(choice_list)
+
+@command("r8")
+def random_rate(args):
+    message = args["args"]
+    give_rating = random.randint(0, 1)
+    message = pos_tag(message)
+    print message
+    nounlist = []
+    for word, tag in message:
+        if tag == "NNP" or tag == "NN":
+            nounlist.append(word)
+    if not nounlist:
+        nounlist.append("nothings")
+    word = nounlist[random.randint(0, len(nounlist)-1)]
+    rating = random.randint(0, 10)
+    if give_rating:
+        return str(rating) + "/10"
+    else:
+        return word + "/10"
 
 @command("hype")
 def hype(args):
