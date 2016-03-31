@@ -5,6 +5,7 @@ import random
 import time
 import requests
 import re
+import reddit
 from os.path import expanduser
 from bs4 import BeautifulSoup
 from nltk.tag import pos_tag
@@ -63,7 +64,7 @@ def get_help(args):
     sendmsg = args["sendmsg"]
     commands = [
         ".add: add an item to your list",
-        ".del: delete an item from your list",
+        ".del: remove an item from your list",
         ".newlist: erase your list to start anew"
     ]
     for command in commands:
@@ -167,7 +168,7 @@ def random_rate(args):
     message = args["args"]
     give_rating = random.randint(0, 1)
     message = pos_tag(message)
-    print message
+    print(message)
     nounlist = []
     for word, tag in message:
         if tag == "NNP" or tag == "NN":
@@ -321,6 +322,23 @@ def eightball(args):
     else:
         return random.choice(responses)
 
+@command("topic")
+def reddit_le(args):
+    new_args = args["args"]
+
+    subreddit = "linuxcirclejerk"
+    if new_args:
+        subreddit = new_args[0]
+
+    try:
+        response = reddit.get_random_comment(subreddit)
+    except reddit.APIError as e:
+        raise e
+    except:
+        raise Exception('Serious Reddit API error, everything is on fire')
+
+    return response
+
 @command("ud")
 def ud(args):
     if args["args"]:
@@ -366,8 +384,15 @@ def ba(args):
         r = requests.get(baseurl + "/search/", headers=user_agent, params=payload)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
-            regex = re.compile("/beer/profile/.*/.+") #so we match only the beers and not the brewery.
-            beers = [b.get("href") for b in soup.find_all('a') if re.match(regex, str(b.get("href")))>=0]
+          #  print(soup)
+            #result = re.compile(r"/beer/profile/.*/.+", str(soup))
+           # beers = re.findall(r"/beer/profile/.*/.+", str(soup)) #so we match only the beers and not the brewery.
+          #  print(regex)
+            for url in soup.findAll('a'):
+                print(url)
+            #print(re.match(r"*/beer/profile/.*/.+", str(soup.findAll('a'))))
+            #beers = [b.get("href") for b in soup.findAll('a') if re.match(r"*/beer/profile/.*/.+", str(b.get("href")))>=0]
+            #print(beers)
             if len(beers) > 0:
                 data = beer_lookup(baseurl+beers[0], user_agent)
                 return data['name'] + " | " + data['style'], "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] +") | Bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[0]
