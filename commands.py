@@ -5,7 +5,6 @@ import random
 import time
 import requests
 import re
-import reddit
 from os.path import expanduser
 from bs4 import BeautifulSoup
 from nltk.tag import pos_tag
@@ -384,18 +383,22 @@ def ba(args):
         r = requests.get(baseurl + "/search/", headers=user_agent, params=payload)
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, "html.parser")
-          #  print(soup)
-            #result = re.compile(r"/beer/profile/.*/.+", str(soup))
-           # beers = re.findall(r"/beer/profile/.*/.+", str(soup)) #so we match only the beers and not the brewery.
-          #  print(regex)
-            for url in soup.findAll('a'):
-                print(url)
-            #print(re.match(r"*/beer/profile/.*/.+", str(soup.findAll('a'))))
-            #beers = [b.get("href") for b in soup.findAll('a') if re.match(r"*/beer/profile/.*/.+", str(b.get("href")))>=0]
-            #print(beers)
+            regex = re.compile("/beer/profile/.*/.+")
+            beers = [b.get("href") for b in soup.find_all(href=regex)]
             if len(beers) > 0:
                 data = beer_lookup(baseurl+beers[0], user_agent)
-                return data['name'] + " | " + data['style'], "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] +") | Bro score: " + data['bro_score'], data['brewery'] + " | " + data['abv'], baseurl+beers[0]
+                msg = [
+                        data['name'] + " | " + data['style'],
+                        "BA score: " + data['ba_score'] + " (From: " + data['ba_ratings'] + ") | Bro score: " + data['bro_score'],
+                        data['brewery'] + " | " + data['abv'],
+                        baseurl + beers[0]
+                ]
+                sendmsg = args["sendmsg"]
+                channel = args["channel"]
+                for lines in msg:
+                    sendmsg(channel, lines)
+                    time.sleep(.3)
+                return ""
 
             else:
                return "No results from BA." 
@@ -405,25 +408,19 @@ def beer_lookup(url, user_agent):
     r = requests.get(url, headers=user_agent) 
     if r.status_code == 200:
         soup = BeautifulSoup(r.text, "html.parser")
-        table = soup.find('table', attrs = {"width" : "100%"})
-        data = []
-        rows = table.find_all("tr")
-        for r in rows:
-            cols = r.find_all("td")
-            cols = [e.text.strip() for e in cols]
-            data.append([e for e in cols if e])
+        # Stupid shit because ABV is just a barewords string somewhere in the div.
+        rightdiv = soup.find('div', style="float:right;width:70%;")
+        strsoup  = str(rightdiv.contents[5]).splitlines()
 
         info = {}
-        rel_data = data[0][1].split('\n')
-        info['name'] = soup.title.string.split("|")[0]
-        info['ba_score'] = rel_data[1]
-        info['ba_class'] = rel_data[2]
-        info['ba_ratings'] = rel_data[3]
-        info['bro_score'] = rel_data[7]
-        info['brewery'] = rel_data[25]
-        (info['style'], info['abv']) = rel_data[29].split("|")
-        for e in info.keys():
-            info[e] = info[e].encode("utf-8")
+        info['name']       = str(soup.title.string.split("|")[0])
+        info['ba_score']   = soup.find('span', class_="BAscore_big ba-score").contents[0]
+        info['ba_class']   = soup.find('span', class_="ba-score_text").contents[0]
+        info['ba_ratings'] = soup.find('span', class_="ba-ratings").contents[0]
+        info['bro_score']  = soup.find('span', class_="BAscore_big ba-bro_score").contents[0]
+        info['brewery']    = soup.select('span[itemprop="title"]')[2].contents[0]
+        info['style']      = soup.select('a[href*="/beer/style/"]')[0].contents[0].contents[0]
+        info['abv']        = strsoup[7].split("</b>")[1].lstrip()
         return info
 
 
