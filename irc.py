@@ -13,7 +13,7 @@ botnick = ""
 if len(sys.argv) < 2:
     print("Usage: irc.py [config.json]")
     exit(1)
-#load config from json, check if everything is alrighty
+#load config from json, check if everything is alright
 with open(sys.argv[1], 'r') as data_file:
     try:
         config = json.loads(data_file.read())
@@ -133,26 +133,26 @@ def process_data(data):
 def isplit(iterable,splitters):
     return [list(g) for k,g in itertools.groupby(iterable,lambda x:x in splitters) if not k]
 
-def pipe_commands(args, channel):
-    pipelist = args["args"].copy()
-    pipelist.insert(0,args["command"])
-    l = isplit(pipelist,"|")
-    out = None
-    for i in l:
-        cmd = i[0].strip(".")
-        if cmd == "tweet":
-            pass
-        a = i[1:]
-        if out:
-            a.append(out)
-        args["command"] = cmd
-        args["args"] = a
-        print(a)
-        c = get_command(args["command"])
-        print(type(c), c)
-        if not cmd == "rate" or not cmd == "r8":
-            out = "".join(c(args))
-    sendmsg(channel, out)
+#def pipe_commands(args, channel):
+#    pipelist = args["args"].copy()
+#    pipelist.insert(0,args["command"])
+#    l = isplit(pipelist,"|")
+#    out = None
+#    for i in l:
+#        cmd = i[0].strip(".")
+#        if cmd == "tweet":
+#            pass
+#        a = i[1:]
+#        if out:
+#            a.append(out)
+#        args["command"] = cmd
+#        args["args"] = a
+#        print(a)
+#        c = get_command(args["command"])
+#        print(type(c), c)
+#        if not cmd == "rate" or not cmd == "r8":
+#            out = "".join(c(args))
+#    sendmsg(channel, out)
 
 
 
@@ -197,14 +197,14 @@ while True:
                 channel = args['channel']
             except Exception as e:
                 pass
-            if "|" in args["args"]:
-                pipe_commands(args, channel)
-            else:
-                cmd = get_command(args["command"])
-                try:
-                    sendmsg(channel, cmd(args))
-                except Exception as e:
-                    print(e)
-                    sendmsg(channel, (str(e)))
+#            if "|" in args["args"]:
+#                pipe_commands(args, channel)
+#            else:
+            cmd = get_command(args["command"])
+            try:
+                sendmsg(channel, cmd(args))
+            except Exception as e:
+                print(e)
+                sendmsg(channel, (str(e)))
         else:
             continue

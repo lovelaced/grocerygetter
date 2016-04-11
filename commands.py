@@ -156,10 +156,13 @@ def new_list(args):
 
 @command("r")
 def random_option(args):
+    print(args["args"])
     choices = " ".join(args["args"]).split("|")
+    print(choices)
     choice_list = []
     for choice in choices:
         choice_list.append(choice.strip())
+    print(choice_list)
     return random.choice(choice_list)
 
 @command("r8")
@@ -321,23 +324,6 @@ def eightball(args):
     else:
         return random.choice(responses)
 
-@command("topic")
-def reddit_le(args):
-    new_args = args["args"]
-
-    subreddit = "linuxcirclejerk"
-    if new_args:
-        subreddit = new_args[0]
-
-    try:
-        response = reddit.get_random_comment(subreddit)
-    except reddit.APIError as e:
-        raise e
-    except:
-        raise Exception('Serious Reddit API error, everything is on fire')
-
-    return response
-
 @command("ud")
 def ud(args):
     if args["args"]:
@@ -358,16 +344,17 @@ def ud(args):
                         if i < 1:
                             raise ValueError
                         data = title + ": "+ str(l[i-1]) + irc_colors.BOLD + " [" + str(i) + "/" + str(len(l)) + "]"
-                        return data.encode("utf-8")
+                        return data
                     except (TypeError, IndexError, ValueError) as e:
                         pass #print error for enterprise level debugging.
 
                 data = title + ": " + l[0] + irc_colors.BOLD + " [" + "1/" + str(len(l)) + "]"
-                return data.encode("utf-8")
+                return data
             else:
                 return "No definition found in UD."
         else:
             return "Connection error: " + str(r.status_code)
+
 
 @command("ba")
 def ba(args):
@@ -401,11 +388,11 @@ def ba(args):
                 return ""
 
             else:
-               return "No results from BA." 
+               return "No results from BA."
 
 # BA helper function.
 def beer_lookup(url, user_agent):
-    r = requests.get(url, headers=user_agent) 
+    r = requests.get(url, headers=user_agent)
     if r.status_code == 200:
         soup = BeautifulSoup(r.text, "html.parser")
         # Stupid shit because ABV is just a barewords string somewhere in the div.
@@ -422,5 +409,3 @@ def beer_lookup(url, user_agent):
         info['style']      = soup.select('a[href*="/beer/style/"]')[0].contents[0].contents[0]
         info['abv']        = strsoup[7].split("</b>")[1].lstrip()
         return info
-
-
