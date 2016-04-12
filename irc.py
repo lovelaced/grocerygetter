@@ -173,6 +173,7 @@ for channel in channel_list:
     joinchan(channel)
     time.sleep(.5)
 
+
 while True:
     data = ircsock.recv(1024)
     try:
@@ -181,12 +182,12 @@ while True:
         continue
     if not valid_data:
         continue
+    print(data)
     for ircmsg in process_data(data):
         if "PING :" in ircmsg:
             ircsock.send(bytes("PONG :ping\n", 'UTF-8'))
         elif "/QUOTE PONG" in ircmsg:
             confirm = "PONG " + ircmsg.split()[-1:][0] + "\r\n"
-            print(confirm)
             ircsock.send(bytes(confirm, 'UTF-8'))
             for channel in channel_list:
                 joinchan(channel)
@@ -195,16 +196,14 @@ while True:
             try:
                 args = parsemsg(str(ircmsg))
                 channel = args['channel']
+#                if "|" in args["args"]:
+#                    pipe_commands(args, channel)
+#                else:
+                cmd = get_command(args["command"])
+                try:
+                    sendmsg(channel, cmd(args))
+                except Exception as e:
+                    print(e)
+                    sendmsg(channel, (str(e)))
             except Exception as e:
                 pass
-#            if "|" in args["args"]:
-#                pipe_commands(args, channel)
-#            else:
-            cmd = get_command(args["command"])
-            try:
-                sendmsg(channel, cmd(args))
-            except Exception as e:
-                print(e)
-                sendmsg(channel, (str(e)))
-        else:
-            continue
